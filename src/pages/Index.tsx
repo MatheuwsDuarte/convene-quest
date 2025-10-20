@@ -65,18 +65,17 @@ const Index = () => {
       
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-hero opacity-10 blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-meninas opacity-10 blur-3xl" />
         <div className="container mx-auto text-center relative z-10">
           <div className="max-w-4xl mx-auto animate-fade-in">
             <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
-              Gerencie Seus Eventos com{" "}
+              Empoderamento Feminino através da{" "}
               <span className="bg-gradient-primary bg-clip-text text-transparent">
-                Eficiência
+                Tecnologia
               </span>
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Plataforma completa para organizar oficinas, palestras e reuniões. 
-              Simplifique inscrições e acompanhe participantes em tempo real.
+              Meninas Digitais UTFPR-CP: Incentivando meninas e mulheres a explorarem o mundo da tecnologia através de oficinas, palestras e eventos transformadores.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link to="/events">
@@ -100,10 +99,10 @@ const Index = () => {
         <div className="container mx-auto">
           <div className="text-center mb-12 animate-fade-in">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Por que escolher o EventHub?
+              Por que participar do Meninas Digitais?
             </h2>
             <p className="text-muted-foreground text-lg">
-              Tudo que você precisa para gerenciar eventos de forma profissional
+              Transforme sua relação com a tecnologia e construa seu futuro
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -187,7 +186,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="bg-muted py-8 px-4 border-t border-border">
         <div className="container mx-auto text-center text-muted-foreground">
-          <p>&copy; 2025 EventHub. Todos os direitos reservados.</p>
+          <p>&copy; 2025 Meninas Digitais UTFPR-CP. Todos os direitos reservados.</p>
         </div>
       </footer>
     </div>

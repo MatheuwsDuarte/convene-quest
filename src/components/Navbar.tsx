@@ -7,11 +7,13 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center">
-              <Calendar className="w-6 h-6 text-primary-foreground" />
-            </div>
-            <span className="text-xl font-bold text-foreground">EventHub</span>
+          <Link to="/" className="flex items-center gap-3">
+            <img 
+              src="/src/assets/meninas-digitais-logo.png" 
+              alt="Meninas Digitais" 
+              className="w-10 h-10 object-contain"
+            />
+            <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">Meninas Digitais</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-6">

@@ -56,6 +56,7 @@ export default {
         'gradient-secondary': 'var(--gradient-secondary)',
         'gradient-accent': 'var(--gradient-accent)',
         'gradient-hero': 'var(--gradient-hero)',
+        'gradient-meninas': 'var(--gradient-meninas)',
       },
       boxShadow: {
         'card': 'var(--shadow-card)',
