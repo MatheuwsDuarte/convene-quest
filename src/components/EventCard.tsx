@@ -1,9 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import { Calendar, MapPin, Users, Clock } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 interface EventCardProps {
+  id?: string | number;
   title: string;
   type: "workshop" | "palestra" | "reuniao";
   date: string;
@@ -30,6 +32,7 @@ const eventTypeConfig = {
 };
 
 const EventCard = ({
+  id,
   title,
   type,
   date,
@@ -39,11 +42,15 @@ const EventCard = ({
   totalSlots,
   description,
 }: EventCardProps) => {
+  const navigate = useNavigate();
   const typeConfig = eventTypeConfig[type];
   const isFull = vacancies === 0;
 
   return (
-    <Card className="group hover:shadow-card-hover transition-all duration-300 animate-fade-in overflow-hidden border-border">
+    <Card 
+      className="group hover:shadow-card-hover transition-all duration-300 animate-fade-in overflow-hidden border-border cursor-pointer"
+      onClick={() => id && navigate(`/events/${String(id)}`)}
+    >
       <div className={`h-2 ${type === 'workshop' ? 'bg-gradient-secondary' : type === 'palestra' ? 'bg-gradient-primary' : 'bg-gradient-accent'}`} />
       <CardHeader>
         <div className="flex items-start justify-between gap-2 mb-2">
