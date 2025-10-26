@@ -20,6 +20,9 @@ const Navbar = () => {
             <Link to="/events" className="text-foreground hover:text-primary transition-colors">
               Eventos
             </Link>
+            <Link to="/about" className="text-foreground hover:text-primary transition-colors">
+              Sobre
+            </Link>
             <Link to="/dashboard" className="text-foreground hover:text-primary transition-colors">
               Meu Painel
             </Link>
