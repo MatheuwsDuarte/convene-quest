@@ -1,4 +1,4 @@
-import { Calendar, User, LogIn } from "lucide-react";
+import { Calendar, User, LogIn, BarChart3, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
@@ -28,6 +28,14 @@ const Navbar = () => {
             </Link>
             <Link to="/admin" className="text-foreground hover:text-primary transition-colors">
               Admin
+            </Link>
+            <Link to="/admin/users" className="text-foreground hover:text-primary transition-colors flex items-center gap-1">
+              <Users className="w-4 h-4" />
+              Usuários
+            </Link>
+            <Link to="/admin/statistics" className="text-foreground hover:text-primary transition-colors flex items-center gap-1">
+              <BarChart3 className="w-4 h-4" />
+              Estatísticas
             </Link>
           </div>
 

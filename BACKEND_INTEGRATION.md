@@ -128,9 +128,15 @@ CREATE TABLE events (
   target_audience VARCHAR(255),
   duration VARCHAR(50),
   instructor VARCHAR(255),
+  is_private BOOLEAN DEFAULT FALSE, -- RF14, RF20: Controle de privacidade
+  materials TEXT, -- RF34: Links para materiais complementares
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
+
+-- RF32: Índice para validação de conflitos de horário
+CREATE INDEX idx_events_schedule ON events(date, time, location);
+CREATE INDEX idx_events_instructor ON events(date, time, instructor);
 ```
 
 ### Tabela: users
@@ -140,12 +146,50 @@ CREATE TABLE users (
   name VARCHAR(255) NOT NULL,
   email VARCHAR(255) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
-  role VARCHAR(50) NOT NULL CHECK (role IN ('admin', 'user')),
-  age INTEGER,
+  age INTEGER CHECK (age >= 12 AND age <= 59), -- Público-alvo: 12-59 anos
   phone VARCHAR(20),
   school VARCHAR(255),
   created_at TIMESTAMP DEFAULT NOW()
 );
+```
+
+### Tabela: user_roles (RF04, RF05: Sistema de Roles)
+```sql
+-- CRITICAL: Roles MUST be in a separate table for security
+CREATE TYPE app_role AS ENUM ('admin', 'user');
+
+CREATE TABLE user_roles (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,
+  role app_role NOT NULL,
+  UNIQUE (user_id, role)
+);
+
+-- Enable RLS
+ALTER TABLE user_roles ENABLE ROW LEVEL SECURITY;
+
+-- Security definer function to check roles
+CREATE OR REPLACE FUNCTION has_role(_user_id UUID, _role app_role)
+RETURNS BOOLEAN
+LANGUAGE SQL
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.user_roles
+    WHERE user_id = _user_id
+      AND role = _role
+  )
+$$;
+
+-- Policy: Only admins can manage user roles
+CREATE POLICY "Admins can manage roles"
+ON user_roles
+FOR ALL
+TO authenticated
+USING (has_role(auth.uid(), 'admin'));
 ```
 
 ### Tabela: enrollments
@@ -184,16 +228,67 @@ O sistema está preparado para autenticação baseada em token JWT:
 
 ## Próximos Passos
 
+### Requisitos Funcionais Implementados no Front-End:
+
+✅ **RF01-RF03**: Autenticação (login, validação, logout) - `/auth`
+✅ **RF04-RF05**: Sistema de roles preparado (admin/user) - usar tabela `user_roles`
+✅ **RF06-RF09**: CRUD de eventos (criar, editar, deletar) - `/admin`
+✅ **RF10-RF11**: Listagem e detalhes de eventos - `/events`, `/events/:id`
+✅ **RF12-RF13**: Gerenciamento de vagas
+✅ **RF14**: Eventos públicos/privados (campo `isPrivate`)
+✅ **RF15-RF18**: Sistema de inscrições
+✅ **RF19**: Exportação de listas de inscritos (CSV)
+✅ **RF20-RF21**: Controle de reuniões internas (campo `isPrivate`)
+✅ **RF22-RF24**: Gerenciamento de usuários - `/admin/users`
+✅ **RF25**: Redefinição de senha - `/auth` (modal)
+✅ **RF26-RF27**: Estatísticas e relatórios - `/admin/statistics`
+✅ **RF28**: Exportação de dados (CSV/TXT)
+✅ **RF29-RF30**: Busca e calendário de eventos
+✅ **RF31**: Mensagens de ausência de eventos
+✅ **RF32**: Validação de conflitos de horário
+✅ **RF33**: Histórico de eventos (eventos passados/futuros)
+✅ **RF34**: Materiais complementares (campo `materials`)
+
+### Checklist de Integração Backend:
+
 1. [ ] Escolher entre Lovable Cloud ou backend customizado
-2. [ ] Implementar as funções em `src/services/api.ts`
-3. [ ] Configurar variáveis de ambiente (API_URL, etc.)
-4. [ ] Testar cada endpoint individualmente
-5. [ ] Implementar tratamento de erros
-6. [ ] Adicionar loading states nos componentes
-7. [ ] Implementar refresh de tokens (se usar JWT)
-8. [ ] Configurar política de CORS
-9. [ ] Implementar validação de dados
-10. [ ] Adicionar testes de integração
+2. [ ] Criar tabelas no banco de dados (veja schemas acima)
+3. [ ] Implementar sistema de roles usando `user_roles` table
+4. [ ] Implementar as funções em `src/services/api.ts`
+5. [ ] Configurar variáveis de ambiente (API_URL, etc.)
+6. [ ] Implementar validação de conflitos de horário (RF32)
+7. [ ] Implementar controle de acesso para eventos privados (RF14, RF20)
+8. [ ] Configurar autenticação e JWT tokens
+9. [ ] Testar cada endpoint individualmente
+10. [ ] Implementar tratamento de erros
+11. [ ] Adicionar loading states nos componentes
+12. [ ] Configurar política de CORS
+13. [ ] Implementar validação de dados server-side
+14. [ ] Adicionar testes de integração
+15. [ ] Implementar envio de emails (redefinição de senha, confirmações)
+
+### Páginas Criadas:
+
+- `/` - Landing page
+- `/auth` - Login/Cadastro/Redefinição de senha
+- `/events` - Listagem de eventos com busca e filtros
+- `/events/:id` - Detalhes do evento e inscrição
+- `/dashboard` - Painel do usuário (eventos inscritos, calendário, avaliações)
+- `/admin` - Painel administrativo (criar/gerenciar eventos)
+- `/admin/users` - Gerenciamento de usuários (RF22-RF24)
+- `/admin/statistics` - Estatísticas e relatórios (RF26-RF27)
+- `/about` - Sobre o projeto Meninas Digitais
+
+### Funcionalidades Prontas para Backend:
+
+1. **Autenticação**: Login, cadastro, logout, redefinição de senha
+2. **Eventos**: CRUD completo, validação de conflitos, controle de privacidade
+3. **Inscrições**: Criar, cancelar, visualizar (admin e usuário)
+4. **Avaliações**: Sistema de notas (1-5) com comentários
+5. **Usuários**: CRUD completo (apenas admin)
+6. **Exportação**: CSV para listas de usuários e inscritos
+7. **Estatísticas**: Dashboard com métricas de eventos
+8. **Materiais**: Campo para links de materiais complementares
 
 ## Variáveis de Ambiente
 

@@ -15,6 +15,8 @@ export interface Event {
   targetAudience?: string;
   duration?: string;
   instructor?: string;
+  isPrivate: boolean; // RF14, RF20: Controle de privacidade
+  materials?: string; // RF34: Materiais complementares
   createdAt?: string;
   updatedAt?: string;
 }

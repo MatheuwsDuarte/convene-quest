@@ -4,11 +4,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Calendar, Mail, Lock, User } from "lucide-react";
 import { Link } from "react-router-dom";
+import { toast } from "@/hooks/use-toast";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,6 +26,21 @@ const Auth = () => {
     setIsLoading(true);
     // TODO: Implement signup logic
     setTimeout(() => setIsLoading(false), 1000);
+  };
+
+  // RF25: Redefinição de senha
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    // TODO: Implement password reset logic with backend
+    setTimeout(() => {
+      setIsLoading(false);
+      setIsResetDialogOpen(false);
+      toast({
+        title: "Email enviado!",
+        description: "Verifique sua caixa de entrada para redefinir sua senha.",
+      });
+    }, 1000);
   };
 
   return (
@@ -83,6 +102,40 @@ const Auth = () => {
                   >
                     {isLoading ? "Entrando..." : "Entrar"}
                   </Button>
+                  
+                  <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="link" className="w-full text-sm text-muted-foreground">
+                        Esqueceu sua senha?
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Redefinir Senha</DialogTitle>
+                        <DialogDescription>
+                          Digite seu email para receber instruções de redefinição de senha (RF25)
+                        </DialogDescription>
+                      </DialogHeader>
+                      <form onSubmit={handlePasswordReset}>
+                        <div className="space-y-4 py-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="reset-email">Email</Label>
+                            <Input
+                              id="reset-email"
+                              type="email"
+                              value={resetEmail}
+                              onChange={(e) => setResetEmail(e.target.value)}
+                              placeholder="seu@email.com"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <Button type="submit" className="w-full" disabled={isLoading}>
+                          {isLoading ? "Enviando..." : "Enviar Email"}
+                        </Button>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
                 </form>
               </TabsContent>
 

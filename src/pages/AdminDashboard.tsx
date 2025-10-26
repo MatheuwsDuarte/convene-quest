@@ -22,6 +22,10 @@ interface Event {
   vacancies: number;
   totalSlots: number;
   description: string;
+  isPrivate: boolean; // RF14: Eventos públicos ou privados
+  materials?: string; // RF34: Materiais complementares (links ou anexos)
+  instructor?: string;
+  requirements?: string;
 }
 
 interface Enrollment {
@@ -61,10 +65,30 @@ const AdminDashboard = () => {
     location: "",
     totalSlots: "",
     description: "",
+    isPrivate: false,
+    materials: "",
+    instructor: "",
+    requirements: "",
   });
 
   const handleCreateEvent = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // RF32: Validar conflitos de horário
+    const hasConflict = events.some(existing => 
+      existing.date === newEvent.date && 
+      existing.time === newEvent.time && 
+      (existing.location === newEvent.location || existing.instructor === newEvent.instructor)
+    );
+    
+    if (hasConflict) {
+      toast({
+        title: "Conflito de horário detectado!",
+        description: "Já existe um evento no mesmo horário e local ou com o mesmo instrutor.",
+        variant: "destructive",
+      });
+      return;
+    }
     
     const event: Event = {
       id: Math.random().toString(36).substr(2, 9),
@@ -76,6 +100,10 @@ const AdminDashboard = () => {
       vacancies: parseInt(newEvent.totalSlots),
       totalSlots: parseInt(newEvent.totalSlots),
       description: newEvent.description,
+      isPrivate: newEvent.isPrivate,
+      materials: newEvent.materials || undefined,
+      instructor: newEvent.instructor || undefined,
+      requirements: newEvent.requirements || undefined,
     };
 
     setEvents([...events, event]);
@@ -87,6 +115,10 @@ const AdminDashboard = () => {
       location: "",
       totalSlots: "",
       description: "",
+      isPrivate: false,
+      materials: "",
+      instructor: "",
+      requirements: "",
     });
 
     toast({
@@ -238,6 +270,50 @@ const AdminDashboard = () => {
                       rows={4}
                       required
                     />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="instructor">Instrutor/Palestrante</Label>
+                    <Input
+                      id="instructor"
+                      value={newEvent.instructor}
+                      onChange={(e) => setNewEvent({ ...newEvent, instructor: e.target.value })}
+                      placeholder="Nome do instrutor"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="requirements">Requisitos</Label>
+                    <Textarea
+                      id="requirements"
+                      value={newEvent.requirements}
+                      onChange={(e) => setNewEvent({ ...newEvent, requirements: e.target.value })}
+                      rows={2}
+                      placeholder="Pré-requisitos para participação"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="materials">Materiais Complementares (RF34)</Label>
+                    <Input
+                      id="materials"
+                      value={newEvent.materials}
+                      onChange={(e) => setNewEvent({ ...newEvent, materials: e.target.value })}
+                      placeholder="Links para materiais, slides, recursos extras"
+                    />
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="isPrivate"
+                      checked={newEvent.isPrivate}
+                      onChange={(e) => setNewEvent({ ...newEvent, isPrivate: e.target.checked })}
+                      className="rounded border-gray-300"
+                    />
+                    <Label htmlFor="isPrivate" className="cursor-pointer">
+                      Evento privado (RF14, RF20 - apenas para membros autenticados)
+                    </Label>
                   </div>
 
                   <Button type="submit" className="w-full">
